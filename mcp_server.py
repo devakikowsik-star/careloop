@@ -1,7 +1,5 @@
 from mcp.server.fastmcp import FastMCP
-from ring_source import get_events
-from rules import check_day
-from summary import make_summary
+import tools
 
 mcp = FastMCP("careloop")
 
@@ -9,19 +7,25 @@ mcp = FastMCP("careloop")
 @mcp.tool()
 def get_today_summary(scenario: str = "normal") -> str:
     """Give a short summary of today's activity at the parent's home."""
-    events = get_events(scenario)
-    result = check_day(events)
-    return make_summary(events, result)
+    return tools.today_summary(scenario)
 
 
 @mcp.tool()
 def get_last_visitor(scenario: str = "normal") -> str:
     """Tell who last rang the doorbell today."""
-    events = get_events(scenario)
-    for e in reversed(events):
-        if e["type"] == "doorbell":
-            return f"The last doorbell was at {e['time']}: {e['note']}."
-    return "No one has rung the doorbell today."
+    return tools.last_visitor(scenario)
+
+
+@mcp.tool()
+def is_everything_ok(scenario: str = "normal") -> str:
+    """Say whether today looks normal or whether the family should check in."""
+    return tools.is_everything_ok(scenario)
+
+
+@mcp.tool()
+def get_last_activity_time(scenario: str = "normal") -> str:
+    """Tell when something last happened at the home today."""
+    return tools.last_activity_time(scenario)
 
 
 if __name__ == "__main__":
